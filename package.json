@@ -1,0 +1,31 @@
+{
+  "name": "ff-build",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/FullFacing/ff-build.git",
+  "author": "Tiaan du Plessis",
+  "license": "MIT",
+  "dependencies": {
+    "babel-core": "6.26.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "1.6.1",
+    "browser-sync": "2.18.13",
+    "event-stream": "3.3.4",
+    "gulp": "3.9.1",
+    "gulp-autoprefixer": "4.0.0",
+    "gulp-babel": "7.0.0",
+    "gulp-cached": "1.1.1",
+    "gulp-clean": "0.3.2",
+    "gulp-clean-css": "3.9.0",
+    "gulp-imagemin": "3.4.0",
+    "gulp-less": "3.3.2",
+    "gulp-plumber": "1.1.0",
+    "gulp-prettier": "https://github.com/FullFacing/gulp-prettier.git",
+    "gulp-remember": "0.3.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-size": "2.1.0",
+    "gulp-uglify": "3.0.0",
+    "gulp-watch": "4.3.11",
+    "vinyl-buffer": "1.0.0"
+  }
+}
