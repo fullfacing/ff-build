@@ -26,6 +26,7 @@
     "gulp-size": "2.1.0",
     "gulp-uglify": "3.0.0",
     "gulp-watch": "4.3.11",
+    "node-sass": "^4.7.2",
     "vinyl-buffer": "1.0.0"
   }
 }

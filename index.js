@@ -29,10 +29,13 @@ const CACHE_KEYS = {
 }
 
 function ffBuild({ vendor = {} } = {}) {
-    Object.assign(vendor, {
-        js: 'plugins',
-        css: 'plugins'
-    })
+    Object.assign(
+        {
+            js: 'plugins',
+            css: 'plugins'
+        },
+        vendor
+    )
     // Build assets
 
     function buildJS() {
