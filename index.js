@@ -189,6 +189,9 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(gulp.dest(`./public/javascripts/${vendor.js}`))
     }
 
+    /**
+     *  Copy vendor CSS files to public
+     */
     function copyVendorCSS() {
         return gulp
             .src(`./assets/stylesheets/${vendor.css}/**/*`)
@@ -203,10 +206,17 @@ function ffBuild({ vendor = {} } = {}) {
     }
 
     /**
+     * Copy over font assets
+     */
+    function copyFonts() {
+        return gulp.src('./assets/fonts/**').pipe(gulp.dest('./public/fonts'))
+    }
+
+    /**
      * Copy Images & vendor JS & CSS to public directory
      */
     function copy() {
-        return merge([copyVendorJS(), copyVendorCSS(), copyImages()])
+        return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts()])
     }
 
     /**
