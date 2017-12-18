@@ -23,6 +23,7 @@
     "gulp-prettier": "https://github.com/FullFacing/gulp-prettier.git",
     "gulp-remember": "0.3.1",
     "gulp-sass": "^3.1.0",
+    "gulp-sass-inheritance": "^1.1.0",
     "gulp-size": "2.1.0",
     "gulp-uglify": "3.0.0",
     "gulp-watch": "4.3.11",
