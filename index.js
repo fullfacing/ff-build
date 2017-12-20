@@ -241,7 +241,9 @@ function ffBuild({ vendor = {} } = {}) {
 
         gulp.watch('./assets/javascripts/**/*.js', function() {
             console.log('JS file changed. Building...')
-            return buildJS()
+            return buildJS().on('end', () => {
+                console.log('Done!')
+            })
         })
 
         gulp.watch(
@@ -252,13 +254,17 @@ function ffBuild({ vendor = {} } = {}) {
             ],
             function() {
                 console.log('Stylesheet file changed. Building...')
-                return merge(buildCSS(), buildLess(), buildSass())
+                return merge(buildCSS(), buildLess(), buildSass()).on('end', () => {
+                    console.log('Done!')
+                })
             }
         )
 
         gulp.watch(['./assets/images/**'], function() {
             console.log('Image file changed. Building...')
-            return copyImages()
+            return copyImages().on('end', () => {
+                console.log('Done!')
+            })
         })
 
         return merge(copy(), build())
