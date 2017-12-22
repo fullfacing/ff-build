@@ -1,7 +1,9 @@
 'use strict'
 
 const gulp = require('gulp')
+const multiDest = require('gulp-multi-dest')
 const babel = require('gulp-babel')
+const path = require('path')
 const size = require('gulp-size')
 const buffer = require('vinyl-buffer')
 const uglify = require('gulp-uglify')
@@ -27,6 +29,9 @@ const CACHE_KEYS = {
     buildCSS: 'build:css',
     formatCSS: 'format:css'
 }
+
+const publicDir = 'public'
+const targetDir = path.join('target', 'web', 'public', 'main')
 
 function ffBuild({ vendor = {} } = {}) {
     Object.assign(
@@ -59,7 +64,7 @@ function ffBuild({ vendor = {} } = {}) {
                 })
             )
             .pipe(remember(CACHE_KEYS.buildJS))
-            .pipe(gulp.dest('public/javascripts'))
+            .pipe(multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')]))
     }
 
     /**
@@ -77,7 +82,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(cache(CACHE_KEYS.buildCSS))
             .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
             .pipe(remember(CACHE_KEYS.buildCSS))
-            .pipe(gulp.dest('./public/stylesheets'))
+            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
     }
 
     /**
@@ -91,7 +96,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(less())
             .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
             .pipe(remember(CACHE_KEYS.buildLess))
-            .pipe(gulp.dest('./public/stylesheets'))
+            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
     }
 
     /**
@@ -106,7 +111,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(sass())
             .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
             .pipe(remember(CACHE_KEYS.buildSass))
-            .pipe(gulp.dest('./public/stylesheets'))
+            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])) 
     }
 
     function build() {
@@ -116,25 +121,25 @@ function ffBuild({ vendor = {} } = {}) {
     /**
      * Format Stylesheets using prettier
      */
-    function formatCSS() {
-        return gulp
-            .src([
-                './assets/stylesheets/**/*',
-                '!./assets/stylesheets/**/*.less',
-                '!./assets/stylesheets/**/*.scss',
-                `!./assets/stylesheets/${vendor.css}/**/*`
-            ])
-            .pipe(plumber())
-            .pipe(prettier())
-            .pipe(gulp.dest('./dist'))
-    }
+    // function formatCSS() {
+    //     return gulp
+    //         .src([
+    //             './assets/stylesheets/**/*',
+    //             '!./assets/stylesheets/**/*.less',
+    //             '!./assets/stylesheets/**/*.scss',
+    //             `!./assets/stylesheets/${vendor.css}/**/*`
+    //         ])
+    //         .pipe(plumber())
+    //         .pipe(prettier())
+    //         .pipe(gulp.dest('./dist'))
+    // }
 
     /**
      * Format stylesheets & JS
      */
-    function format() {
-        return merge([formatCSS()])
-    }
+    // function format() {
+    //     return merge([formatCSS()])
+    // }
 
     /**
      * Minify JS assets using uglify
@@ -147,7 +152,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(buffer())
             .pipe(uglify())
             .pipe(size({ title: 'JS after minification' }))
-            .pipe(gulp.dest('public/javascripts'))
+            .pipe(multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')]))
     }
 
     /**
@@ -157,10 +162,10 @@ function ffBuild({ vendor = {} } = {}) {
         return gulp
             .src(['./public/stylesheets/**/*.css'])
             .pipe(plumber())
-            .pipe(size({ title: 'CSS before minification' }))
+            .pipe(size({ title: 'CSS prior to minification' }))
             .pipe(cleanCSS({ compatibility: 'ie9' }))
-            .pipe(size({ title: 'CSS after minification' }))
-            .pipe(gulp.dest('./public/stylesheets'))
+            .pipe(size({ title: 'CSS post minification' }))
+            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
     }
 
     /**
@@ -171,7 +176,7 @@ function ffBuild({ vendor = {} } = {}) {
             .src('./public/images/**/*')
             .pipe(plumber())
             .pipe(imageMin())
-            .pipe(gulp.dest('./public/images'))
+            .pipe(multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')]))
     }
 
     /**
@@ -185,9 +190,10 @@ function ffBuild({ vendor = {} } = {}) {
      * Copy vendor JS files to public
      */
     function copyVendorJS() {
+
         return gulp
             .src(`./assets/javascripts/${vendor.js}/**/*`)
-            .pipe(gulp.dest(`./public/javascripts/${vendor.js}`))
+            .pipe(multiDest([path.join(publicDir, 'javascripts', `${vendor.js}`), path.join(targetDir, 'javascripts', `${vendor.js}`)]))
     }
 
     /**
@@ -196,21 +202,23 @@ function ffBuild({ vendor = {} } = {}) {
     function copyVendorCSS() {
         return gulp
             .src(`./assets/stylesheets/${vendor.css}/**/*`)
-            .pipe(gulp.dest(`./public/stylesheets/${vendor.css}`))
+            .pipe(multiDest([path.join(publicDir, 'stylesheets', `${vendor.css}`), path.join(targetDir, 'stylesheets', `${vendor.css}`)]))
     }
 
     /**
      * Copy over image assets
      */
     function copyImages() {
-        return gulp.src('./assets/images/**').pipe(gulp.dest('./public/images'))
+        return gulp.src('./assets/images/**')
+            .pipe(multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')]))
     }
 
     /**
      * Copy over font assets
      */
     function copyFonts() {
-        return gulp.src('./assets/fonts/**').pipe(gulp.dest('./public/fonts'))
+        return gulp.src('./assets/fonts/**')
+            .pipe(multiDest([path.join(publicDir, 'fonts'), path.join(targetDir, 'fonts')]))
     }
 
     /**
@@ -225,7 +233,7 @@ function ffBuild({ vendor = {} } = {}) {
      */
     gulp.task('clean', function() {
         console.log('Cleaning project...')
-        return gulp.src('./public', { read: false }).pipe(clean())
+        return gulp.src([publicDir, targetDir], { read: false }).pipe(clean())
     })
 
     /**
@@ -240,9 +248,9 @@ function ffBuild({ vendor = {} } = {}) {
         // Setup watching of JS, CSS & Images
 
         gulp.watch('./assets/javascripts/**/*.js', function() {
-            console.log('JS file changed. Building...')
+            process.stdout.write('JS file changed. Building...')
             return buildJS().on('end', () => {
-                console.log('Done!')
+                process.stdout.write('Done! \n')
             })
         })
 
@@ -253,17 +261,17 @@ function ffBuild({ vendor = {} } = {}) {
                 './assets/stylesheets/**/*.scss'
             ],
             function() {
-                console.log('Stylesheet file changed. Building...')
+                process.stdout.write('Stylesheet file changed. Building...')
                 return merge(buildCSS(), buildLess(), buildSass()).on('end', () => {
-                    console.log('Done!')
+                    process.stdout.write('Done!\n')
                 })
             }
         )
 
         gulp.watch(['./assets/images/**'], function() {
-            console.log('Image file changed. Building...')
+            process.stdout.write('Image file changed. Building...')
             return copyImages().on('end', () => {
-                console.log('Done!')
+                process.stdout.write('Done!\n')
             })
         })
 

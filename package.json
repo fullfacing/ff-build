@@ -19,6 +19,7 @@
     "gulp-clean-css": "3.9.0",
     "gulp-imagemin": "3.4.0",
     "gulp-less": "3.3.2",
+    "gulp-multi-dest": "^0.0.4",
     "gulp-plumber": "1.1.0",
     "gulp-prettier": "https://github.com/FullFacing/gulp-prettier.git",
     "gulp-remember": "0.3.1",
