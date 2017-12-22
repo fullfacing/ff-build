@@ -30,8 +30,8 @@ const CACHE_KEYS = {
     formatCSS: 'format:css'
 }
 
-const publicDir = 'public'
-const targetDir = path.join('target', 'web', 'public', 'main')
+const publicDir = './public'
+const targetDir = path.join('./target', 'web', 'public', 'main')
 
 function ffBuild({ vendor = {} } = {}) {
     Object.assign(
