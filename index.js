@@ -56,7 +56,7 @@ function ffBuild({ vendor = {} } = {}) {
                             'env',
                             {
                                 targets: {
-                                    browsers: ['ie >= 9']
+                                    browsers: ['last 3 version']
                                 }
                             }
                         ]
@@ -80,7 +80,7 @@ function ffBuild({ vendor = {} } = {}) {
             ])
             .pipe(plumber())
             .pipe(cache(CACHE_KEYS.buildCSS))
-            .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
+            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
             .pipe(remember(CACHE_KEYS.buildCSS))
             .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
     }
@@ -94,7 +94,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(plumber())
             .pipe(cache(CACHE_KEYS.buildLess))
             .pipe(less())
-            .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
+            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
             .pipe(remember(CACHE_KEYS.buildLess))
             .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
     }
@@ -109,7 +109,7 @@ function ffBuild({ vendor = {} } = {}) {
             .pipe(cache(CACHE_KEYS.buildSass))
             .pipe(sassInheritance({dir: './assets/stylesheets/'}))
             .pipe(sass())
-            .pipe(autoprefixer({ browsers: ['ie >= 9'] }))
+            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
             .pipe(remember(CACHE_KEYS.buildSass))
             .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])) 
     }
