@@ -18,7 +18,6 @@ const sassInheritance = require('gulp-sass-inheritance')
 const plumber = require('gulp-plumber')
 const autoprefixer = require('gulp-autoprefixer')
 const cache = require('gulp-cached')
-const prettier = require('gulp-prettier')
 
 // Cache keys for gulp-cached
 const CACHE_KEYS = {
