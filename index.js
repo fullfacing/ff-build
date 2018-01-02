@@ -118,29 +118,6 @@ function ffBuild({ vendor = {} } = {}) {
     }
 
     /**
-     * Format Stylesheets using prettier
-     */
-    // function formatCSS() {
-    //     return gulp
-    //         .src([
-    //             './assets/stylesheets/**/*',
-    //             '!./assets/stylesheets/**/*.less',
-    //             '!./assets/stylesheets/**/*.scss',
-    //             `!./assets/stylesheets/${vendor.css}/**/*`
-    //         ])
-    //         .pipe(plumber())
-    //         .pipe(prettier())
-    //         .pipe(gulp.dest('./dist'))
-    // }
-
-    /**
-     * Format stylesheets & JS
-     */
-    // function format() {
-    //     return merge([formatCSS()])
-    // }
-
-    /**
      * Minify JS assets using uglify
      */
     function minifyJS() {
