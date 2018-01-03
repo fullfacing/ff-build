@@ -198,10 +198,18 @@ function ffBuild({ vendor = {} } = {}) {
     }
 
     /**
+     * Copy over font assets
+     */
+    function copyCSSFonts() {
+        return gulp.src('./assets/stylesheets/fonts/**')
+            .pipe(multiDest([path.join(publicDir, 'stylesheets', 'fonts'), path.join(targetDir, 'fonts')]))
+    }
+
+    /**
      * Copy Images & vendor JS & CSS to public directory
      */
     function copy() {
-        return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts()])
+        return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts(), copyCSSFonts()])
     }
 
     /**
