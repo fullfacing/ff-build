@@ -18,6 +18,7 @@ const sassInheritance = require('gulp-sass-inheritance')
 const plumber = require('gulp-plumber')
 const autoprefixer = require('gulp-autoprefixer')
 const cache = require('gulp-cached')
+const watch = require('gulp-watch')
 
 // Cache keys for gulp-cached
 const CACHE_KEYS = {
@@ -231,14 +232,14 @@ function ffBuild({ vendor = {} } = {}) {
     gulp.task('default', ['clean'], function() {
         // Setup watching of JS, CSS & Images
 
-        gulp.watch('./assets/javascripts/**/*.js', function() {
+        watch('./assets/javascripts/**/*.js', function() {
             process.stdout.write('JS file changed. Building...')
             return buildJS().on('end', () => {
                 process.stdout.write('Done! \n')
             })
         })
 
-        gulp.watch(
+        watch(
             [
                 './assets/stylesheets/**/*.less',
                 './assets/stylesheets/**/*.css',
@@ -252,7 +253,7 @@ function ffBuild({ vendor = {} } = {}) {
             }
         )
 
-        gulp.watch(['./assets/images/**'], function() {
+        watch(['./assets/images/**'], function() {
             process.stdout.write('Image file changed. Building...')
             return copyImages().on('end', () => {
                 process.stdout.write('Done!\n')

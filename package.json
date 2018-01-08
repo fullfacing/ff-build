@@ -27,6 +27,7 @@
     "gulp-sass-inheritance": "^1.1.0",
     "gulp-size": "2.1.0",
     "gulp-uglify": "3.0.0",
+    "gulp-watch": "^5.0.0",
     "node-sass": "^4.7.2",
     "vinyl-buffer": "1.0.0"
   }
