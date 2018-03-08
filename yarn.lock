@@ -2436,16 +2436,6 @@ gulp-plumber@1.1.0:
     gulp-util "^3"
     through2 "^2"
 
-"gulp-prettier@https://github.com/FullFacing/gulp-prettier.git":
-  version "1.1.0"
-  resolved "https://github.com/FullFacing/gulp-prettier.git#2826d8d1e51e3cae4dd2dd246b51e0a0df989141"
-  dependencies:
-    gulp-util "^3.0.8"
-    merge "^1.2.0"
-    prettier "1.9.2"
-    through2 "^2.0.3"
-    vinyl-sourcemaps-apply "^0.2.1"
-
 gulp-remember@0.3.1:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/gulp-remember/-/gulp-remember-0.3.1.tgz#5776b6f64c5a1c5c4d4555406723ec8e2b0407e7"
@@ -3707,10 +3697,6 @@ merge-stream@^1.0.0:
   dependencies:
     readable-stream "^2.0.1"
 
-merge@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.0.tgz#7531e39d4949c281a66b8c5a6e0265e8b05894da"
-
 micromatch@2.3.11, micromatch@^2.1.5, micromatch@^2.3.7:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-2.3.11.tgz#86677c97d1720b363431d04d0d15293bd38c1565"
@@ -4347,10 +4333,6 @@ prepend-http@^1.0.1:
 preserve@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
-
-prettier@1.9.2:
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.9.2.tgz#96bc2132f7a32338e6078aeb29727178c6335827"
 
 pretty-bytes@^3.0.1:
   version "3.0.1"
@@ -5629,7 +5611,7 @@ vinyl-fs@^2.2.0, vinyl-fs@^2.4.4:
     vali-date "^1.0.0"
     vinyl "^1.0.0"
 
-vinyl-sourcemaps-apply@0.2.1, vinyl-sourcemaps-apply@^0.2.0, vinyl-sourcemaps-apply@^0.2.1:
+vinyl-sourcemaps-apply@0.2.1, vinyl-sourcemaps-apply@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/vinyl-sourcemaps-apply/-/vinyl-sourcemaps-apply-0.2.1.tgz#ab6549d61d172c2b1b87be5c508d239c8ef87705"
   dependencies:
