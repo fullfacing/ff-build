@@ -1,0 +1,3 @@
+const ffBuild = require('../')
+
+ffBuild()
