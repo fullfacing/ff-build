@@ -12,256 +12,298 @@ const imageMin = require('gulp-imagemin')
 const merge = require('event-stream').concat
 const clean = require('gulp-clean')
 const remember = require('gulp-remember')
-const less = require('gulp-less')
 const sass = require('gulp-sass')
 const sassInheritance = require('gulp-sass-inheritance')
 const plumber = require('gulp-plumber')
-const autoprefixer = require('gulp-autoprefixer')
+const autoprefixer = require('autoprefixer')
 const cache = require('gulp-cached')
 const watch = require('gulp-watch')
+const postcss = require('gulp-postcss')
+const postcssFixes = require('postcss-fixes')
 
 // Cache keys for gulp-cached
 const CACHE_KEYS = {
-    buildJS: 'build:js',
-    minJS: 'min:js',
-    buildLess: 'build:less',
-    buildSass: 'build:sass',
-    buildCSS: 'build:css',
-    formatCSS: 'format:css'
+  buildJS: 'build:js',
+  minJS: 'min:js',
+  buildSass: 'build:sass',
+  buildCSS: 'build:css',
+  formatCSS: 'format:css'
 }
 
-const publicDir = './public'
-const targetDir = path.join('./target', 'web', 'public', 'main')
+const supportedBrowsers = ['> 1%', 'IE 10'] // https://github.com/browserslist/browserslist
 
-function ffBuild({ vendor = {} } = {}) {
-    Object.assign(
-        {
-            js: 'plugins',
-            css: 'plugins'
-        },
-        vendor
-    )
-    // Build assets
-
-    function buildJS() {
-        return gulp
-            .src(['./assets/javascripts/**/*.js', `!./assets/javascripts/${vendor.js}/**/*`])
-            .pipe(plumber())
-            .pipe(cache(CACHE_KEYS.buildJS))
-            .pipe(
-                babel({
-                    plugins: ['transform-react-jsx'],
-                    presets: [
-                        [
-                            'env',
-                            {
-                                targets: {
-                                    browsers: ['last 3 version']
-                                }
-                            }
-                        ]
-                    ]
-                })
-            )
-            .pipe(remember(CACHE_KEYS.buildJS))
-            .pipe(multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')]))
+function ffBuild (config = {}) {
+  config = Object.assign({
+    root: '.',
+    vendor: {
+      js: 'plugins',
+      css: 'plugins'
     }
+  }, config)
 
-    /**
+  const publicDir = path.join(config.root, 'public')
+  const targetDir = path.join(config.root, 'target', 'web', 'public', 'main')
+
+  function buildJS () {
+    const sources = [`${config.root}/assets/javascripts/**/*.js`, `!${config.root}/assets/javascripts/${config.vendor.js}/**/*`]
+    const babelConfig = {
+      presets: [
+        [
+          'env',
+          {
+            'targets': {
+              'browsers': supportedBrowsers
+            }
+          }
+        ]
+      ]}
+
+    const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
+
+    return gulp
+      .src(sources)
+      .pipe(plumber())
+      .pipe(cache(CACHE_KEYS.buildJS))
+      .pipe(babel(babelConfig))
+      .pipe(remember(CACHE_KEYS.buildJS))
+      .pipe(dest)
+  }
+
+  /**
      * Build CSS files by autoprefixing
      */
-    function buildCSS() {
-        return gulp
-            .src([
-                './assets/stylesheets/**/*.css',
-                '!./assets/stylesheets/**/*.less',
-                '!./assets/stylesheets/**/*.scss',
-                `!./assets/stylesheets/${vendor.css}/**/*`
-            ])
-            .pipe(plumber())
-            .pipe(cache(CACHE_KEYS.buildCSS))
-            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
-            .pipe(remember(CACHE_KEYS.buildCSS))
-            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
-    }
+  function buildCSS () {
+    const sources = [
+      `${config.root}/assets/stylesheets/**/*.css`,
+      `!${config.root}/assets/stylesheets/**/*.scss`,
+      `!${config.root}/assets/stylesheets/${config.vendor.css}/**/*`
+    ]
+    const dest = multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])
 
-    /**
-     * Build Less files
-     */
-    function buildLess() {
-        return gulp
-            .src(['./assets/stylesheets/**/*.less', `!./assets/stylesheets/${vendor.css}/**/*`])
-            .pipe(plumber())
-            .pipe(cache(CACHE_KEYS.buildLess))
-            .pipe(less())
-            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
-            .pipe(remember(CACHE_KEYS.buildLess))
-            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
-    }
+    return gulp
+      .src(sources)
+      .pipe(plumber())
+      .pipe(cache(CACHE_KEYS.buildCSS))
+      .pipe(postcss([
+        postcssFixes(),
+        autoprefixer({browsers: supportedBrowsers})
+      ]))
+      .pipe(remember(CACHE_KEYS.buildCSS))
+      .pipe(dest)
+  }
 
-    /**
+  /**
      * Build Sass files
      */
-    function buildSass() {
-        return gulp
-            .src(['./assets/stylesheets/**/*.scss', `!./assets/stylesheets/${vendor.css}/**/*`])
-            .pipe(plumber())
-            .pipe(cache(CACHE_KEYS.buildSass))
-            .pipe(sassInheritance({dir: './assets/stylesheets/'}))
-            .pipe(sass())
-            .pipe(autoprefixer({ browsers: ['last 3 version'] }))
-            .pipe(remember(CACHE_KEYS.buildSass))
-            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])) 
-    }
+  function buildSass () {
+    const sources = [
+      `${config.root}/assets/stylesheets/**/*.scss`,
+      `!${config.root}/assets/stylesheets/${config.vendor.css}/**/*`
+    ]
+    const dest = multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])
 
-    function build() {
-        return merge([buildJS(), buildCSS(), buildLess(), buildSass()])
-    }
+    return gulp
+      .src(sources)
+      .pipe(plumber())
+      .pipe(cache(CACHE_KEYS.buildSass))
+      .pipe(sassInheritance({dir: './assets/stylesheets/'}))
+      .pipe(sass())
+      .pipe(postcss([
+        postcssFixes(),
+        autoprefixer({browsers: supportedBrowsers})
+      ]))
+      .pipe(remember(CACHE_KEYS.buildSass))
+      .pipe(dest)
+  }
 
-    /**
+  function build () {
+    return merge([buildJS(), buildCSS(), buildSass()])
+  }
+
+  /**
      * Minify JS assets using uglify
      */
-    function minifyJS() {
-        return gulp
-            .src(['public/javascripts/**/*.js', '!./public/javascripts/plugins/**/*'])
-            .pipe(plumber())
-            .pipe(size({ title: 'JS before minification' }))
-            .pipe(buffer())
-            .pipe(uglify())
-            .pipe(size({ title: 'JS after minification' }))
-            .pipe(multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')]))
-    }
+  function minifyJS () {
+    const sources = [`${publicDir}/javascripts/**/*.js`, `!${publicDir}/javascripts/plugins/**/*`]
+    const dest = [path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')]
 
-    /**
+    return gulp
+      .src(sources)
+      .pipe(plumber())
+      .pipe(size({ title: 'js:before' }))
+      .pipe(buffer())
+      .pipe(uglify())
+      .pipe(size({ title: 'js:after' }))
+      .pipe(multiDest(dest))
+  }
+
+  /**
      * Minify CSS files in a IE 9 compatible manner using clean-css
      */
-    function minifyCSS() {
-        return gulp
-            .src(['./public/stylesheets/**/*.css'])
-            .pipe(plumber())
-            .pipe(size({ title: 'CSS prior to minification' }))
-            .pipe(cleanCSS({ compatibility: 'ie9' }))
-            .pipe(size({ title: 'CSS post minification' }))
-            .pipe(multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')]))
-    }
+  function minifyCSS () {
+    const sources = [`${publicDir}/stylesheets/**/*.css`]
+    const cleanCSSConfig = { compatibility: 'ie9' }
+    const dest = multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])
 
-    /**
+    return gulp
+      .src(sources)
+      .pipe(plumber())
+      .pipe(size({ title: 'css:before' }))
+      .pipe(cleanCSS(cleanCSSConfig))
+      .pipe(size({ title: 'css:after' }))
+      .pipe(dest)
+  }
+
+  /**
      * Minify image assets using imagemin
      */
-    function minifyImages() {
-        return gulp
-            .src('./public/images/**/*')
-            .pipe(plumber())
-            .pipe(imageMin())
-            .pipe(multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')]))
-    }
+  function minifyImages () {
+    const source = `${publicDir}/images/**/*`
+    const dest = multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')])
 
-    /**
+    return gulp
+      .src(source)
+      .pipe(plumber())
+      .pipe(imageMin([
+        imageMin.gifsicle({interlaced: true, optimizationLevel: 2}),
+        imageMin.jpegtran({progressive: true}),
+        imageMin.optipng({optimizationLevel: 5}),
+        imageMin.svgo({
+          plugins: [
+            {removeViewBox: true},
+            {cleanupIDs: false}
+          ]
+        })
+      ]))
+      .pipe(dest)
+  }
+
+  /**
      * Merge JS, CSS & Image minification
      */
-    function minify() {
-        return merge([minifyImages(), minifyJS(), minifyCSS()])
-    }
+  function minify () {
+    return merge([minifyImages(), minifyJS(), minifyCSS()])
+  }
 
-    /**
+  /**
      * Copy vendor JS files to public
      */
-    function copyVendorJS() {
+  function copyVendorJS () {
+    const source = `${config.root}/assets/javascripts/${config.vendor.js}/**/*`
+    const dest = multiDest([path.join(publicDir, 'javascripts', `${config.vendor.js}`), path.join(targetDir, 'javascripts', `${config.vendor.js}`)])
+    return gulp
+      .src(source)
+      .pipe(dest)
+  }
 
-        return gulp
-            .src(`./assets/javascripts/${vendor.js}/**/*`)
-            .pipe(multiDest([path.join(publicDir, 'javascripts', `${vendor.js}`), path.join(targetDir, 'javascripts', `${vendor.js}`)]))
-    }
-
-    /**
+  /**
      *  Copy vendor CSS files to public
      */
-    function copyVendorCSS() {
-        return gulp
-            .src(`./assets/stylesheets/${vendor.css}/**/*`)
-            .pipe(multiDest([path.join(publicDir, 'stylesheets', `${vendor.css}`), path.join(targetDir, 'stylesheets', `${vendor.css}`)]))
-    }
+  function copyVendorCSS () {
+    const source = `${config.root}/assets/stylesheets/${config.vendor.css}/**/*`
+    const dest = multiDest([path.join(publicDir, 'stylesheets', `${config.vendor.css}`), path.join(targetDir, 'stylesheets', `${config.vendor.css}`)])
+    return gulp
+      .src(source)
+      .pipe(dest)
+  }
 
-    /**
+  /**
      * Copy over image assets
      */
-    function copyImages() {
-        return gulp.src('./assets/images/**')
-            .pipe(multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')]))
-    }
+  function copyImages () {
+    const source = `${config.root}/assets/images/**`
+    const dest = multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')])
+    return gulp.src(source)
+      .pipe(dest)
+  }
 
-    /**
+  /**
      * Copy over font assets
      */
-    function copyFonts() {
-        return gulp.src('./assets/fonts/**')
-            .pipe(multiDest([path.join(publicDir, 'fonts'), path.join(targetDir, 'fonts')]))
-    }
+  function copyFonts () {
+    const source = `${config.root}/assets/fonts/**`
+    const dest = multiDest([path.join(publicDir, 'fonts'), path.join(targetDir, 'fonts')])
+    return gulp.src(source)
+      .pipe(dest)
+  }
 
-    /**
+  /**
      * Copy over font assets
      */
-    function copyCSSFonts() {
-        return gulp.src('./assets/stylesheets/fonts/**')
-            .pipe(multiDest([path.join(publicDir, 'stylesheets', 'fonts'), path.join(targetDir, 'fonts')]))
-    }
+  function copyCSSFonts () {
+    const source = `${config.root}/assets/stylesheets/fonts/**`
+    const dest = multiDest([path.join(publicDir, 'stylesheets', 'fonts'), path.join(targetDir, 'fonts')])
+    return gulp.src(source)
+      .pipe(dest)
+  }
 
-    /**
+  /**
      * Copy Images & vendor JS & CSS to public directory
      */
-    function copy() {
-        return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts(), copyCSSFonts()])
-    }
+  function copy () {
+    return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts(), copyCSSFonts()])
+  }
 
-    /**
+  /**
      * Clean public directory
      */
-    gulp.task('clean', function() {
-        console.log('Cleaning project...')
-        return gulp.src([publicDir, targetDir], { read: false }).pipe(clean())
-    })
+  gulp.task('clean', function () {
+    console.log('cleaning...')
+    return gulp.src([publicDir, targetDir], { read: false }).pipe(clean())
+  })
 
-    /**
+  /**
      * Create production build in public folder
      */
-    gulp.task('build', ['clean'], function() {
-        console.log('Building for production...')
-        return merge(copy(), build()).on('end', minify)
+  gulp.task('build', ['clean'], function () {
+    console.log('Building for prod...')
+    return merge(copy(), build()).on('end', minify)
+  })
+
+  gulp.task('default', ['clean'], function () {
+    const watchDirs = {
+      js: `${config.root}/assets/javascripts/**/*.js`,
+      css: [
+        `${config.root}/assets/stylesheets/**/*.css`,
+        `${config.root}/assets/stylesheets/**/*.scss`
+      ],
+      images: [`${config.root}/assets/images/**`],
+      fonts: [`${config.root}/assets/stylesheets/fonts/**`, `${config.root}/assets/fonts/**`]
+    }
+
+    watch(watchDirs.js, function () {
+      process.stdout.write('js building...')
+      return merge(buildJS()).on('end', () => {
+        process.stdout.write('done \n')
+      })
     })
 
-    gulp.task('default', ['clean'], function() {
-        // Setup watching of JS, CSS & Images
-
-        watch('./assets/javascripts/**/*.js', function() {
-            process.stdout.write('JS file changed. Building...')
-            return buildJS().on('end', () => {
-                process.stdout.write('Done! \n')
-            })
+    watch(watchDirs.css
+      ,
+      function () {
+        process.stdout.write('css/scss building...')
+        return merge(buildCSS(), buildSass()).on('end', () => {
+          process.stdout.write('done\n')
         })
+      }
+    )
 
-        watch(
-            [
-                './assets/stylesheets/**/*.less',
-                './assets/stylesheets/**/*.css',
-                './assets/stylesheets/**/*.scss'
-            ],
-            function() {
-                process.stdout.write('Stylesheet file changed. Building...')
-                return merge(buildCSS(), buildLess(), buildSass()).on('end', () => {
-                    process.stdout.write('Done!\n')
-                })
-            }
-        )
-
-        watch(['./assets/images/**'], function() {
-            process.stdout.write('Image file changed. Building...')
-            return copyImages().on('end', () => {
-                process.stdout.write('Done!\n')
-            })
-        })
-
-        return merge(copy(), build())
+    watch(watchDirs.images, function () {
+      process.stdout.write('images changed. copying...')
+      return merge(copyImages()).on('end', () => {
+        process.stdout.write('done\n')
+      })
     })
+
+    watch(watchDirs.fonts, function () {
+      process.stdout.write('fonts changed. copying...')
+      return merge(copyFonts(), copyCSSFonts()).on('end', () => {
+        process.stdout.write('done\n')
+      })
+    })
+
+    return merge(copy(), build())
+  })
 }
 
 module.exports = ffBuild
