@@ -1,6 +1,6 @@
 {
   "name": "ff-build",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "index.js",
   "repository": "https://github.com/FullFacing/ff-build.git",
   "author": "Tiaan du Plessis",
@@ -24,6 +24,7 @@
     "gulp-clean-css": "3.9.0",
     "gulp-imagemin": "3.4.0",
     "gulp-multi-dest": "^0.0.4",
+    "gulp-notify": "^3.2.0",
     "gulp-plumber": "1.1.0",
     "gulp-postcss": "^7.0.1",
     "gulp-remember": "0.3.1",

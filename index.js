@@ -15,6 +15,7 @@ const remember = require('gulp-remember')
 const sass = require('gulp-sass')
 const sassInheritance = require('gulp-sass-inheritance')
 const plumber = require('gulp-plumber')
+const notify = require('gulp-notify')
 const autoprefixer = require('autoprefixer')
 const cache = require('gulp-cached')
 const watch = require('gulp-watch')
@@ -31,6 +32,17 @@ const CACHE_KEYS = {
 }
 
 const supportedBrowsers = ['> 1%', 'IE 10'] // https://github.com/browserslist/browserslist
+
+function onError (err) {
+  notify({
+    title: 'Build error!',
+    message: 'Check the console.'
+  }).write(err)
+
+  console.log(err.toString())
+
+  this.emit('end')
+}
 
 function ffBuild (config = {}) {
   config = Object.assign({
@@ -62,7 +74,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(sources)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(cache(CACHE_KEYS.buildJS))
       .pipe(babel(babelConfig))
       .pipe(remember(CACHE_KEYS.buildJS))
@@ -82,7 +94,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(sources)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(cache(CACHE_KEYS.buildCSS))
       .pipe(postcss([
         postcssFixes(),
@@ -104,7 +116,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(sources)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(cache(CACHE_KEYS.buildSass))
       .pipe(sassInheritance({dir: './assets/stylesheets/'}))
       .pipe(sass())
@@ -129,7 +141,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(sources)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(size({ title: 'js:before' }))
       .pipe(buffer())
       .pipe(uglify())
@@ -147,7 +159,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(sources)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(size({ title: 'css:before' }))
       .pipe(cleanCSS(cleanCSSConfig))
       .pipe(size({ title: 'css:after' }))
@@ -163,7 +175,7 @@ function ffBuild (config = {}) {
 
     return gulp
       .src(source)
-      .pipe(plumber())
+      .pipe(plumber({ errorHandle: onError }))
       .pipe(imageMin([
         imageMin.gifsicle({interlaced: true, optimizationLevel: 2}),
         imageMin.jpegtran({progressive: true}),
