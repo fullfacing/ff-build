@@ -225,7 +225,7 @@ function ffBuild (config = {}) {
   function copyImages () {
     const source = `${config.root}/assets/images/**`
     const dest = multiDest([path.join(publicDir, 'images'), path.join(targetDir, 'images')])
-    return gulp.src(source)
+    return gulp.src(source, { allowEmpty: true })
       .pipe(dest)
   }
 
@@ -235,7 +235,7 @@ function ffBuild (config = {}) {
   function copyFonts () {
     const source = `${config.root}/assets/fonts/**`
     const dest = multiDest([path.join(publicDir, 'fonts'), path.join(targetDir, 'fonts')])
-    return gulp.src(source)
+    return gulp.src(source, { allowEmpty: true })
       .pipe(dest)
   }
 
@@ -245,7 +245,7 @@ function ffBuild (config = {}) {
   function copyCSSFonts () {
     const source = `${config.root}/assets/stylesheets/fonts/**`
     const dest = multiDest([path.join(publicDir, 'stylesheets', 'fonts'), path.join(targetDir, 'fonts')])
-    return gulp.src(source)
+    return gulp.src(source, { allowEmpty: true })
       .pipe(dest)
   }
 
@@ -261,18 +261,19 @@ function ffBuild (config = {}) {
      */
   gulp.task('clean', function () {
     console.log('cleaning...')
-    return gulp.src([publicDir, targetDir], { read: false }).pipe(clean())
+    return gulp.src([publicDir, targetDir], { read: false, allowEmpty: true }).pipe(clean())
   })
 
   /**
      * Create production build in public folder
      */
-  gulp.task('build', ['clean'], function () {
-    console.log('Building for prod...')
-    return merge(copy(), build()).on('end', minify)
-  })
+  gulp.task('build', gulp.series('clean', function(done) {
+    return merge(copy(), build(), ).on('end', () => {
+      minify().on('end', done)
+    })
+  }))
 
-  gulp.task('default', ['clean'], function () {
+  gulp.task('default', gulp.series('clean', function watchDefault() {
     const watchDirs = {
       js: `${config.root}/assets/javascripts/**/*.js`,
       css: [
@@ -283,16 +284,14 @@ function ffBuild (config = {}) {
       fonts: [`${config.root}/assets/stylesheets/fonts/**`, `${config.root}/assets/fonts/**`]
     }
 
-    watch(watchDirs.js, function () {
+    watch(watchDirs.js, function (done) {
       process.stdout.write('js building...')
       return merge(buildJS()).on('end', () => {
         process.stdout.write('done \n')
       })
     })
 
-    watch(watchDirs.css
-      ,
-      function () {
+    watch(watchDirs.css, function cssBuild() {
         process.stdout.write('css/scss building...')
         return merge(buildCSS(), buildSass()).on('end', () => {
           process.stdout.write('done\n')
@@ -300,14 +299,14 @@ function ffBuild (config = {}) {
       }
     )
 
-    watch(watchDirs.images, function () {
+    watch(watchDirs.images, function imageBuild() {
       process.stdout.write('images changed. copying...')
       return merge(copyImages()).on('end', () => {
         process.stdout.write('done\n')
       })
     })
 
-    watch(watchDirs.fonts, function () {
+    watch(watchDirs.fonts, function fontBuild() {
       process.stdout.write('fonts changed. copying...')
       return merge(copyFonts(), copyCSSFonts()).on('end', () => {
         process.stdout.write('done\n')
@@ -315,7 +314,8 @@ function ffBuild (config = {}) {
     })
 
     return merge(copy(), build())
-  })
+  }))
+
 }
 
 module.exports = ffBuild
