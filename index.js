@@ -244,24 +244,18 @@ function ffBuild (config = {}) {
     return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts(), copyCSSFonts()])
   }
 
-  /**
-     * Clean public directory
-     */
-  gulp.task('clean', function () {
+  function runClean() {
     console.log('cleaning...')
     return gulp.src([publicDir, targetDir], { read: false, allowEmpty: true }).pipe(clean())
-  })
+  }
 
-  /**
-     * Create production build in public folder
-     */
-  gulp.task('build', gulp.series('clean', function(done) {
-    return merge(copy(), build(), ).on('end', () => {
+  function runBuild(done) {
+    return merge(copy(), build()).on('end', () => {
       minify().on('end', done)
     })
-  }))
+  }
 
-  gulp.task('default', gulp.series('clean', function watchDefault() {
+  function runDefault() {
     const watchDirs = {
       js: `${config.root}/assets/javascripts/**/*.js`,
       css: [
@@ -302,7 +296,17 @@ function ffBuild (config = {}) {
     })
 
     return merge(copy(), build())
-  }))
+  }
+
+  // gulp.task('build', gulp.series(runClean, runBuild))
+  // gulp.task('default', gulp.series(runClean, runDefault))
+
+
+  return {
+    runClean,
+    runBuild,
+    runDefault
+  }
 
 }
 
