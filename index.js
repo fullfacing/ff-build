@@ -48,6 +48,7 @@ function ffBuild (config = {}) {
     const sources = [`${config.root}/assets/javascripts/**/*.js`, `!${config.root}/assets/javascripts/${config.vendor.js}/**/*`]
     const babelConfig = {
       presets: [
+        'flow',
         [
           'env',
           {

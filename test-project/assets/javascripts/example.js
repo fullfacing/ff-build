@@ -1,7 +1,8 @@
+//@flow
 console.log('example')
 
 const fooper = () => ({
   hello: true
 })
 
-const bang= () => {}
+const bang= (name: String) => {}
