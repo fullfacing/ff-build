@@ -1,6 +1,6 @@
 {
   "name": "ff-build",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "main": "index.js",
   "repository": "https://github.com/FullFacing/ff-build.git",
   "author": "Tiaan du Plessis",
@@ -13,6 +13,7 @@
   "dependencies": {
     "autoprefixer": "^8.6.5",
     "babel-core": "6.26.3",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-env": "1.7.0",
     "babel-preset-flow": "^6.23.0",
     "event-stream": "3.3.4",
@@ -38,7 +39,6 @@
     "imagemin-svgo": "6.0.0",
     "node-sass": "4.9.2",
     "postcss-fixes": "2.0.1",
-    "babel-plugin-transform-remove-console": "^6.9.4",
     "vinyl-buffer": "1.0.1"
   },
   "devDependencies": {
