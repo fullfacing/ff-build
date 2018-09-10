@@ -57,7 +57,9 @@ function ffBuild (config = {}) {
             }
           }
         ]
-      ]}
+      ],
+      'plugins': ['transform-remove-console']
+    }
 
     const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
 
@@ -87,7 +89,7 @@ function ffBuild (config = {}) {
       .pipe(cache(CACHE_KEYS.buildCSS))
       .pipe(postcss([
         postcssFixes(),
-        autoprefixer({browsers: supportedBrowsers})
+        autoprefixer({ browsers: supportedBrowsers })
       ]))
       .pipe(remember(CACHE_KEYS.buildCSS))
       .pipe(dest)
@@ -107,11 +109,11 @@ function ffBuild (config = {}) {
       .src(sources)
       .pipe(plumber())
       .pipe(cache(CACHE_KEYS.buildSass))
-      .pipe(sassInheritance({dir: './assets/stylesheets/'}))
+      .pipe(sassInheritance({ dir: './assets/stylesheets/' }))
       .pipe(sass())
       .pipe(postcss([
         postcssFixes(),
-        autoprefixer({browsers: supportedBrowsers})
+        autoprefixer({ browsers: supportedBrowsers })
       ]))
       .pipe(remember(CACHE_KEYS.buildSass))
       .pipe(dest)
@@ -166,13 +168,13 @@ function ffBuild (config = {}) {
       .src(source)
       .pipe(plumber())
       .pipe(imageMin([
-        imageMin.gifsicle({interlaced: true, optimizationLevel: 2}),
-        imageMin.jpegtran({progressive: true}),
-        imageMin.optipng({optimizationLevel: 5}),
+        imageMin.gifsicle({ interlaced: true, optimizationLevel: 2 }),
+        imageMin.jpegtran({ progressive: true }),
+        imageMin.optipng({ optimizationLevel: 5 }),
         imageMin.svgo({
           plugins: [
-            {removeViewBox: true},
-            {cleanupIDs: false}
+            { removeViewBox: true },
+            { cleanupIDs: false }
           ]
         })
       ]))
@@ -245,18 +247,18 @@ function ffBuild (config = {}) {
     return merge([copyVendorJS(), copyVendorCSS(), copyImages(), copyFonts(), copyCSSFonts()])
   }
 
-  function runClean() {
+  function runClean () {
     console.log('cleaning...')
     return gulp.src([publicDir, targetDir], { read: false, allowEmpty: true }).pipe(clean())
   }
 
-  function runBuild(done) {
+  function runBuild (done) {
     return merge(copy(), build()).on('end', () => {
       minify().on('end', done)
     })
   }
 
-  function runDefault() {
+  function runDefault () {
     const watchDirs = {
       js: `${config.root}/assets/javascripts/**/*.js`,
       css: [
@@ -274,22 +276,22 @@ function ffBuild (config = {}) {
       })
     })
 
-    watch(watchDirs.css, function cssBuild() {
-        process.stdout.write('css/scss building...')
-        return merge(buildCSS(), buildSass()).on('end', () => {
-          process.stdout.write('done\n')
-        })
-      }
+    watch(watchDirs.css, function cssBuild () {
+      process.stdout.write('css/scss building...')
+      return merge(buildCSS(), buildSass()).on('end', () => {
+        process.stdout.write('done\n')
+      })
+    }
     )
 
-    watch(watchDirs.images, function imageBuild() {
+    watch(watchDirs.images, function imageBuild () {
       process.stdout.write('images changed. copying...')
       return merge(copyImages()).on('end', () => {
         process.stdout.write('done\n')
       })
     })
 
-    watch(watchDirs.fonts, function fontBuild() {
+    watch(watchDirs.fonts, function fontBuild () {
       process.stdout.write('fonts changed. copying...')
       return merge(copyFonts(), copyCSSFonts()).on('end', () => {
         process.stdout.write('done\n')
@@ -302,13 +304,11 @@ function ffBuild (config = {}) {
   // gulp.task('build', gulp.series(runClean, runBuild))
   // gulp.task('default', gulp.series(runClean, runDefault))
 
-
   return {
     runClean,
     runBuild,
     runDefault
   }
-
 }
 
 module.exports = ffBuild

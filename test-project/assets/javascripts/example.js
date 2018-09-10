@@ -6,3 +6,5 @@ const fooper = () => ({
 })
 
 const bang= (name: String) => {}
+
+console.log('Whoop')
