@@ -58,7 +58,8 @@ function ffBuild (config = {}) {
           }
         ]
       ],
-      'plugins': ['transform-remove-console']
+      'plugins': ['transform-remove-console'],
+      'comments': false
     }
 
     const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
