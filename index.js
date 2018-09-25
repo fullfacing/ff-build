@@ -44,9 +44,9 @@ function ffBuild (config = {}) {
   const publicDir = path.join(config.root, 'public')
   const targetDir = path.join(config.root, 'target', 'web', 'public', 'main')
 
-  function buildJS () {
+  function buildJS (prod = false) {
     const sources = [`${config.root}/assets/javascripts/**/*.js`, `!${config.root}/assets/javascripts/${config.vendor.js}/**/*`]
-    const babelConfig = {
+    const babelConfig = Object.assign({
       presets: [
         'flow',
         [
@@ -57,10 +57,11 @@ function ffBuild (config = {}) {
             }
           }
         ]
-      ],
-      'plugins': ['transform-remove-console'],
-      'comments': false
-    }
+      ]
+
+    }, prod ? { 'plugins': ['transform-remove-console'],
+      'comments': false } : {})
+
 
     const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
 
@@ -120,8 +121,8 @@ function ffBuild (config = {}) {
       .pipe(dest)
   }
 
-  function build () {
-    return merge([buildJS(), buildCSS(), buildSass()])
+  function build (prod) {
+    return merge([buildJS(prod), buildCSS(), buildSass()])
   }
 
   /**
@@ -254,7 +255,7 @@ function ffBuild (config = {}) {
   }
 
   function runBuild (done) {
-    return merge(copy(), build()).on('end', () => {
+    return merge(copy(), build(true)).on('end', () => {
       minify().on('end', done)
     })
   }
@@ -299,7 +300,7 @@ function ffBuild (config = {}) {
       })
     })
 
-    return merge(copy(), build())
+    return merge(copy(), build(false))
   }
 
   // gulp.task('build', gulp.series(runClean, runBuild))
