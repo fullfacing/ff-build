@@ -1,6 +1,6 @@
 {
   "name": "ff-build",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "main": "index.js",
   "repository": "https://github.com/FullFacing/ff-build.git",
   "author": "Tiaan du Plessis",
