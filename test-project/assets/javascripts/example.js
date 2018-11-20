@@ -7,6 +7,6 @@ const fooper = () => ({
   hello: true
 })
 
-const bang= (name: String) => {}
+const bang= (name: String) => '<ENV::name>'
 
 console.log('Whoop')

@@ -20,6 +20,7 @@ const cache = require('gulp-cached')
 const watch = require('gulp-watch')
 const postcss = require('gulp-postcss')
 const postcssFixes = require('postcss-fixes')
+const injectEnvs = require('gulp-inject-envs')
 
 // Cache keys for gulp-cached
 const CACHE_KEYS = {
@@ -38,7 +39,8 @@ function ffBuild (config = {}) {
     vendor: {
       js: 'plugins',
       css: 'plugins'
-    }
+    },
+    env: {}
   }, config)
 
   const publicDir = path.join(config.root, 'public')
@@ -62,13 +64,13 @@ function ffBuild (config = {}) {
     }, prod ? { 'plugins': ['transform-remove-console'],
       'comments': false } : {})
 
-
     const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
 
     return gulp
       .src(sources)
       .pipe(plumber())
       .pipe(cache(CACHE_KEYS.buildJS))
+      .pipe(injectEnvs(config.env))
       .pipe(babel(babelConfig))
       .pipe(remember(CACHE_KEYS.buildJS))
       .pipe(dest)
