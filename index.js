@@ -70,7 +70,7 @@ function ffBuild (config = {}) {
       .src(sources)
       .pipe(plumber())
       .pipe(cache(CACHE_KEYS.buildJS))
-      .pipe(injectEnvs(config.env))
+      .pipe(injectEnvs(config.env, { warn: true }))
       .pipe(babel(babelConfig))
       .pipe(remember(CACHE_KEYS.buildJS))
       .pipe(dest)
