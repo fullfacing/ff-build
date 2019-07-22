@@ -8,7 +8,8 @@
   "scripts": {
     "test": "gulp --gulpfile ./test-project/Gulpfile.js",
     "test:build": "gulp build --gulpfile ./test-project/Gulpfile.js",
-    "lint": "standard --fix ./index.js"
+    "lint": "standard --fix ./index.js",
+    "check": "npm-check -u"
   },
   "dependencies": {
     "add": "^2.0.6",
@@ -18,7 +19,7 @@
     "babel-preset-env": "1.7.0",
     "babel-preset-flow": "^6.23.0",
     "event-stream": "3.3.4",
-    "gulp": "4.0.0",
+    "gulp": "^4.0.2",
     "gulp-autoprefixer": "5.0.0",
     "gulp-babel": "7.0.1",
     "gulp-cached": "1.1.1",
@@ -27,24 +28,24 @@
     "gulp-imagemin": "^5.0.3",
     "gulp-inject-envs": "^1.1.0",
     "gulp-multi-dest": "1.3.7",
-    "gulp-plumber": "1.2.0",
+    "gulp-plumber": "^1.2.1",
     "gulp-postcss": "7.0.1",
-    "gulp-remember": "1.0.0",
-    "gulp-sass": "4.0.1",
-    "gulp-sass-inheritance": "1.1.0",
+    "gulp-remember": "^1.0.1",
+    "gulp-sass": "4.0.2",
+    "gulp-sass-inheritance": "^1.1.2",
     "gulp-size": "3.0.0",
-    "gulp-uglify": "3.0.0",
-    "gulp-watch": "5.0.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-watch": "^5.0.1",
     "imagemin-gifsicle": "^6.0.1",
     "imagemin-jpegtran": "^6.0.0",
     "imagemin-optipng": "^6.0.0",
     "imagemin-svgo": "6.0.0",
-    "node-sass": "^4.9.2",
+    "node-sass": "^4.12.0",
     "postcss-fixes": "2.0.1",
-    "vinyl-buffer": "1.0.1",
-    "yarn": "^1.12.3"
+    "vinyl-buffer": "1.0.1"
   },
   "devDependencies": {
-    "standard": "^12.0.1"
+    "npm-check": "^5.9.0",
+    "standard": "^13.1.0"
   }
 }

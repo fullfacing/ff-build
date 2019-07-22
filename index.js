@@ -54,15 +54,15 @@ function ffBuild (config = {}) {
         [
           'env',
           {
-            'targets': {
-              'browsers': supportedBrowsers
+            targets: {
+              browsers: supportedBrowsers
             }
           }
         ]
       ]
 
-    }, prod ? { 'plugins': ['transform-remove-console'],
-      'comments': false } : {})
+    }, prod ? { plugins: ['transform-remove-console'],
+      comments: false } : {})
 
     const dest = multiDest([path.join(publicDir, 'javascripts'), path.join(targetDir, 'javascripts')])
 
