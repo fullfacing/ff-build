@@ -12,8 +12,6 @@ const imageMin = require('gulp-imagemin')
 const merge = require('event-stream').concat
 const clean = require('gulp-clean')
 const remember = require('gulp-remember')
-const sass = require('gulp-sass')
-const sassInheritance = require('gulp-sass-inheritance')
 const plumber = require('gulp-plumber')
 const autoprefixer = require('autoprefixer')
 const cache = require('gulp-cached')
@@ -26,7 +24,6 @@ const injectEnvs = require('gulp-inject-envs')
 const CACHE_KEYS = {
   buildJS: 'build:js',
   minJS: 'min:js',
-  buildSass: 'build:sass',
   buildCSS: 'build:css',
   formatCSS: 'format:css'
 }
@@ -82,7 +79,6 @@ function ffBuild (config = {}) {
   function buildCSS () {
     const sources = [
       `${config.root}/assets/stylesheets/**/*.css`,
-      `!${config.root}/assets/stylesheets/**/*.scss`,
       `!${config.root}/assets/stylesheets/${config.vendor.css}/**/*`
     ]
     const dest = multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])
@@ -99,32 +95,8 @@ function ffBuild (config = {}) {
       .pipe(dest)
   }
 
-  /**
-     * Build Sass files
-     */
-  function buildSass () {
-    const sources = [
-      `${config.root}/assets/stylesheets/**/*.scss`,
-      `!${config.root}/assets/stylesheets/${config.vendor.css}/**/*`
-    ]
-    const dest = multiDest([path.join(publicDir, 'stylesheets'), path.join(targetDir, 'stylesheets')])
-
-    return gulp
-      .src(sources)
-      .pipe(plumber())
-      .pipe(cache(CACHE_KEYS.buildSass))
-      .pipe(sassInheritance({ dir: './assets/stylesheets/' }))
-      .pipe(sass())
-      .pipe(postcss([
-        postcssFixes(),
-        autoprefixer({ browsers: supportedBrowsers })
-      ]))
-      .pipe(remember(CACHE_KEYS.buildSass))
-      .pipe(dest)
-  }
-
   function build (prod) {
-    return merge([buildJS(prod), buildCSS(), buildSass()])
+    return merge([buildJS(prod), buildCSS()])
   }
 
   /**
@@ -265,10 +237,7 @@ function ffBuild (config = {}) {
   function runDefault () {
     const watchDirs = {
       js: `${config.root}/assets/javascripts/**/*.js`,
-      css: [
-        `${config.root}/assets/stylesheets/**/*.css`,
-        `${config.root}/assets/stylesheets/**/*.scss`
-      ],
+      css: `${config.root}/assets/stylesheets/**/*.css`,
       images: [`${config.root}/assets/images/**`],
       fonts: [`${config.root}/assets/stylesheets/fonts/**`, `${config.root}/assets/fonts/**`]
     }
@@ -281,8 +250,8 @@ function ffBuild (config = {}) {
     })
 
     watch(watchDirs.css, function cssBuild () {
-      process.stdout.write('css/scss building...')
-      return merge(buildCSS(), buildSass()).on('end', () => {
+      process.stdout.write('CSS building...')
+      return merge(buildCSS()).on('end', () => {
         process.stdout.write('done\n')
       })
     }
