@@ -18,7 +18,7 @@
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-preset-env": "1.7.0",
     "babel-preset-flow": "^6.23.0",
-    "event-stream": "3.3.4",
+    "event-stream": "4.0.1",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "5.0.0",
     "gulp-babel": "7.0.1",
