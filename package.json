@@ -42,7 +42,7 @@
     "vinyl-buffer": "1.0.1"
   },
   "devDependencies": {
-    "npm-check": "^5.9.0",
+    "npm-check": "^5.9.2",
     "standard": "^13.1.0"
   }
 }
