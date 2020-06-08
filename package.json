@@ -29,7 +29,7 @@
     "gulp-inject-envs": "^1.1.0",
     "gulp-multi-dest": "1.3.7",
     "gulp-plumber": "^1.2.1",
-    "gulp-postcss": "7.0.1",
+    "gulp-postcss": "8.0.0",
     "gulp-remember": "^1.0.1",
     "gulp-size": "3.0.0",
     "gulp-uglify": "^3.0.2",
