@@ -43,6 +43,6 @@
   },
   "devDependencies": {
     "npm-check": "^5.9.0",
-    "standard": "^13.1.0"
+    "standard": "^15.0.1"
   }
 }
